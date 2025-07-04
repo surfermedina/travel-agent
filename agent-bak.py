@@ -15,9 +15,6 @@ from openai import AzureOpenAI
 # Load environment variables from .env
 load_dotenv()
 
-# print("Endpoint:", os.getenv("AZURE_OPENAI_ENDPOINT"))
-
-
 # Initialize AzureOpenAI client
 # client is an object of the class AzureOpenAI -- defined in the openai SDK with pre-defined methods like, .chat.completions.create(...).
 client = AzureOpenAI(

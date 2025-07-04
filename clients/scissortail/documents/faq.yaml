@@ -1,0 +1,25 @@
+faqs:
+  - question: What types of home loans do you offer?
+    answer: We specialize in conventional, FHA, VA, USDA Rural Development, and Section 184 Native American home loans.
+  - question: How do I get pre-qualified for a home loan?
+    answer: You can start the pre-qualification process online or by calling one of our loan officers.
+  - question: What documents do I need to apply?
+    answer: You'll typically need your ID, recent pay stubs, W-2s, tax returns, and bank statements.
+  - question: How long does loan approval take?
+    answer: Pre-approvals can be issued within 24 hours. Full approval may take 2–4 weeks.
+  - question: Can I apply online?
+    answer: Yes! Visit https://scissortailfinancial.com and click “Apply Now” to begin your application.
+  - question: What is the minimum credit score for a loan?
+    answer: Each loan program differs, but we generally look for a score of 620 or higher.
+  - question: Do you offer down payment assistance?
+    answer: We can connect you with local and federal programs that may help with your down payment.
+  - question: Can I get a loan if I’m self-employed?
+    answer: Yes, we work with many self-employed borrowers. Provide tax returns and proof of income.
+  - question: Do you serve first-time homebuyers?
+    answer: Absolutely. We guide first-time buyers through every step of the process.
+  - question: Who can I talk to if I have questions?
+    answer: Call 918-555-0123 or email info@scissortailfinancial.com for assistance.
+{% for i in range(40) %}
+  - question: Sample mortgage-related question {{ i+11 }}?
+    answer: This is a placeholder answer {{ i+11 }} for Scissortail.
+{% endfor %}
