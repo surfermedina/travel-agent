@@ -1,0 +1,11 @@
+# Secrets and local config
+.env
+config/azure.env
+
+# Python virtual env
+.venv/
+
+# Bytecode & temp files
+__pycache__/
+*.pyc
+*.pyo
