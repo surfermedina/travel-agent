@@ -1,25 +1,21 @@
 faqs:
-  - question: What are your hours of operation?
-    answer: Our lobby is open Monday through Friday, 9:00 AM to 5:00 PM. Drive-thru and ITM hours may vary by location.
-  - question: How can I check my account balance after hours?
-    answer: You can log in to online banking or use our mobile app to check your balance 24/7.
-  - question: I lost my debit card. What should I do?
-    answer: Please call our 24/7 card support line at 1-800-123-4567 to report a lost or stolen card immediately.
-  - question: Can I deposit a check outside of business hours?
-    answer: Yes. Use our mobile banking app to deposit checks anytime, or visit an ATM that accepts deposits.
-  - question: How do I reset my online banking password?
-    answer: Visit our login page and click “Forgot Password.” Follow the instructions to reset your credentials.
-  - question: Are mobile deposits available immediately?
-    answer: Mobile deposits are typically available the next business day, but some deposits may take longer for verification.
-  - question: Can I apply for a loan online?
-    answer: Yes. Visit our website at https://bank.regent to start a loan application at your convenience.
-  - question: How can I contact customer service during off-hours?
-    answer: You can send us a secure message in online banking or call our 24/7 automated support line.
-  - question: Is Zelle available for money transfers?
-    answer: Yes. You can send and receive money with Zelle through our mobile app or online banking.
-  - question: I see a suspicious transaction. What should I do?
-    answer: Please call our fraud support line at 1-800-123-4567 immediately to report the issue.
-{% for i in range(40) %}
-  - question: Sample question {{ i+11 }} for a community bank?
-    answer: This is a placeholder answer {{ i+11 }} for demo purposes.
-{% endfor %}
+  - question: "What are your hours of operation?"
+    answer: "Our lobby is open Monday through Friday, 9:00 AM to 5:00 PM. Drive-thru and ITM hours may vary by location."
+  - question: "How can I check my account balance after hours?"
+    answer: "You can log in to online banking or use our mobile app to check your balance 24/7."
+  - question: "I lost my debit card. What should I do?"
+    answer: "Please call our 24/7 card support line at 1-800-123-4567 to report a lost or stolen card immediately."
+  - question: "Can I deposit a check outside of business hours?"
+    answer: "Yes. Use our mobile banking app to deposit checks anytime, or visit an ATM that accepts deposits."
+  - question: "How do I reset my online banking password?"
+    answer: "Visit our login page and click “Forgot Password.” Follow the instructions to reset your credentials."
+  - question: "Are mobile deposits available immediately?"
+    answer: "Mobile deposits are typically available the next business day, but some deposits may take longer for verification."
+  - question: "Can I apply for a loan online?"
+    answer: "Yes. Visit our website at https://bank.regent to start a loan application at your convenience."
+  - question: "How can I contact customer service during off-hours?"
+    answer: "You can send us a secure message in online banking or call our 24/7 automated support line."
+  - question: "Is Zelle available for money transfers?"
+    answer: "Yes. You can send and receive money with Zelle through our mobile app or online banking."
+  - question: "I see a suspicious transaction. What should I do?"
+    answer: "Please call our fraud support line at 1-800-123-4567 immediately to report the issue."

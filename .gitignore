@@ -9,3 +9,15 @@ config/azure.env
 __pycache__/
 *.pyc
 *.pyo
+
+# Logs and outputs
+logs/
+*.log
+
+# VS Code / PyCharm / IDE config
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db

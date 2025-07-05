@@ -1,25 +1,24 @@
-# Used to interact with the operating system — in our case, to read environment variables from .env
-# Example: os.getenv("AZURE_OPENAI_API_KEY") gets your API key from the .env file securely.
+# === Imports ===
 import os
-
-# From the python-dotenv package
-# Example: load_dotenv() reads the .env file and makes the values available via os.getenv()
-# Used to keep secrets out of the source code
 from dotenv import load_dotenv
-
-# Imports the new Azure-specific OpenAI SDK client, allowing us to interact with Azure OpenAI services.
-#   Set a custom azure_endpoint
-#   Use your Azure deployment name instead of the base model name (like gpt-4)
 from openai import AzureOpenAI
+from utils.logger import get_logger
+from utils.sanitize import sanitize_input
 
-# Load environment variables from .env
+# Local modules
+from utils.yaml_loader import load_faq
+from utils.match_faq import find_best_match
+
+# === Load environment variables ===
 load_dotenv()
 
-# print("Endpoint:", os.getenv("AZURE_OPENAI_ENDPOINT"))
+# === System Prompt ===
+system_prompt = "You are a helpful banking assistant. Answer questions clearly and concisely."
 
+# === Initialize logger ===
+logger = get_logger()
 
-# Initialize AzureOpenAI client
-# client is an object of the class AzureOpenAI -- defined in the openai SDK with pre-defined methods like, .chat.completions.create(...).
+# === Initialize AzureOpenAI client ===
 client = AzureOpenAI(
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
     api_version="2024-12-01-preview",
@@ -27,27 +26,43 @@ client = AzureOpenAI(
 )
 
 # Get deployment name from env
-# Uses os.getenv(...) to access an environment variable from .env file.
-# Storing the value in the 'deployment' variable so you can use it in your GPT request.
-deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT");
+deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
 
-# The response will contain the model's reply to the input message.
-# Sends a Chat Completion request to the GPT model via your Azure deployment.
-# 'create' is a function and it takes 'model' and 'messages' and sends them to the GPT model, and returns a 'response' object.
-response = client.chat.completions.create(
-    model=deployment,   # Tells Azure which deployed model to use.
-    # The core of the chat input. You're giving the model a conversation history in the form of a list of messages.
-    # Each message is a dictionary with two keys:
-    #   "role" → tells GPT who is speaking ("system", "user", or "assistant")
-    #   "content" → the text of the message
-    messages=[
-        {"role": "system", "content": "You are a helpful banking assistant."},
-        {"role": "user", "content": "What are your hours of operation?"}
-    ]
-)
+# === Load FAQ Data ===
+client_id = os.getenv("CLIENT_ID", "demobank")
+faq_data = load_faq(client_id)
 
-# Print the model's reply
-# GPT responses always return a list of “choices”, even if there's only one.
-# Each “choice” is a possible model response.
-# So 'choices' is a list, typically with one item unless you request more.
-print(response.choices[0].message.content)
+# === Simulated User Input ===
+raw_input = "What are your hours of operation?"  # TODO: Replace with input from frontend
+user_question = sanitize_input(raw_input) # Sanitize the input for security and consistency
+logger.info(f"Client: {client_id} | Raw Input: {raw_input}")
+logger.debug(f"Sanitized input: {user_question}")
+
+# === First try to match FAQ (using RapidFuzz) ===
+answer = find_best_match(user_question, faq_data)
+
+# === If an answer is found in the FAQ, return it; otherwise, query GPT ===
+if answer:
+    logger.info("[FAQ MATCH] Answer returned from FAQ.")
+    logger.debug(f"Answer: {answer}")
+    print(answer)
+else:
+    logger.info("[NO FAQ MATCH] Querying GPT...")
+    # If no FAQ match, query the GPT model
+    response = client.chat.completions.create(
+        model=deployment,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_question}
+        ]
+    )
+    # If GPT returns an invalid response, guard against it
+    if response.choices and response.choices[0].message:
+        answer = response.choices[0].message.content
+        logger.debug(f"GPT Answer: {answer}")
+        print(answer)
+    else:
+        logger.warning("GPT returned no response.")
+        answer = "Sorry, I couldn’t retrieve a response at the moment."
+        print(answer)
+
