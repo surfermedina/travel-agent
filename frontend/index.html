@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Banking Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="chat-container">
+    <h2>Banking Assistant</h2>
+
+    <div id="chat-window"></div>
+
+    <!-- 👇 User input form -->
+    <form id="query-form">
+      <input
+        type="text"
+        id="user-input"
+        placeholder="Ask your question here..."
+        required
+      />
+      <button type="submit">Send</button> <!-- 🔧 Style button in CSS -->
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("query-form");
+    const input = document.getElementById("user-input");
+    const chatWindow = document.getElementById("chat-window");
+
+    // Append message to chat log
+    function addMessage(role, text) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", role);
+      msg.innerText = text;
+      chatWindow.appendChild(msg);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Handle form submit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+
+      addMessage("user", question);
+      input.value = "";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        });
+
+        const data = await response.json();
+        addMessage("assistant", data.answer);
+      } catch (err) {
+        console.error(err);
+        addMessage("assistant", "Error: Unable to connect to server.");
+      }
+    });
+  </script>
+</body>
+</html>
