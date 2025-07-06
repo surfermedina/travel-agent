@@ -17,6 +17,7 @@ Usage:
 import os
 import yaml
 
+# Load the YAML library for parsing client FAQ file.
 def load_faq(client_id: str) -> list[dict]:
     """
     Loads the YAML FAQ file for a given client.
@@ -46,3 +47,15 @@ def load_faq(client_id: str) -> list[dict]:
     # Normalize keys to 'q' and 'a'
     faq = [{"q": entry.get("question", ""), "a": entry.get("answer", "")} for entry in faq_list]
     return faq
+
+# Load the system prompt for a given client from a YAML file.
+def load_system_prompt(client_id: str) -> str:
+    path = f"clients/{client_id}/documents/prompt.yaml"
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"No prompt file found at {path}")
+
+    with open(path, "r", encoding="utf-8") as file:
+        prompt_data = yaml.safe_load(file)
+
+    return prompt_data.get("system_prompt", "You are a helpful assistant.")
