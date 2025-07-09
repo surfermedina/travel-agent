@@ -1,19 +1,24 @@
 #!/bin/bash
 
-echo "===== RUNNING STARTUP.SH =====" >> /home/LogFiles/startup.log
+# Define log file location for Azure App Service
+LOG_FILE="/home/LogFiles/startup.log"
 
-# Extract app files if tarball exists
-if [ -f /home/site/wwwroot/output.tar.gz ]; then
-  echo "Extracting app files..." >> /home/LogFiles/startup.log
-  tar -xzf /home/site/wwwroot/output.tar.gz -C /home/site/wwwroot
-else
-  echo "No output.tar.gz found." >> /home/LogFiles/startup.log
-fi
+# Define the working directory where the app files are deployed
+APP_DIR="/home/site/wwwroot"
 
-# Install dependencies
-echo "Installing dependencies..." >> /home/LogFiles/startup.log
-pip install -r /home/site/wwwroot/requirements.txt >> /home/LogFiles/startup.log 2>&1
+# Log the beginning of the startup sequence
+echo "===== STARTING BANK AGENT =====" >> "$LOG_FILE"
 
-# Start the app
-echo "Starting gunicorn..." >> /home/LogFiles/startup.log
-exec gunicorn app.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000
+# Change to the app directory; exit if it fails
+cd "$APP_DIR" || exit 1
+
+# Log and install Python dependencies from requirements.txt
+echo "Installing dependencies..." >> "$LOG_FILE"
+pip install --no-cache-dir -r requirements.txt >> "$LOG_FILE" 2>&1
+
+# Log and start the FastAPI app using gunicorn + uvicorn worker
+echo "Starting gunicorn..." >> "$LOG_FILE"
+exec gunicorn app.main:app \
+  --workers 1 \
+  --worker-class uvicorn.workers.UvicornWorker \
+  --bind 0.0.0.0:8000 >> "$LOG_FILE" 2>&1
