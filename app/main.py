@@ -33,7 +33,10 @@ app = FastAPI(
 # CORS middleware for frontend/backend separation
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Use specific domains in prod
+    allow_origins=[
+        "https://bankagent.moreyummy.com",
+        "https://moreyummy.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
