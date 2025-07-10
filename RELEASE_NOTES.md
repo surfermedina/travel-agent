@@ -1,7 +1,7 @@
-# Banking Agent – Version 1.0 Release Notes
+# Banking Agent – Version 1.1 Release Notes
 
-**Release Date:** July 5, 2025  
-**Version Tag:** v1.0.0  
+**Release Date:** July 9, 2025  
+**Version Tag:** v1.1.0  
 **Project:** banking-agent  
 **Author:** Joel “Ed” Medina  
 **Website:** https://moreyummy.com
@@ -10,96 +10,104 @@
 
 ## Overview
 
-This marks the first stable release of the Banking Agent, a secure, modular, and extensible AI assistant designed to support small banks and financial institutions. The agent intelligently responds to customer queries using a combination of FAQ matching and Azure-hosted large language models (LLMs).
+Version 1.1 delivers the first **publicly deployed**, Azure-hosted release of the Banking Agent with full **frontend integration**, secure CORS configuration, and end-to-end query resolution via both FAQ matching and Azure OpenAI fallback. This version is stable, web-accessible, and ready for client demos and further modular expansion.
 
 ---
 
-## Core Features
+## What’s New in v1.1
 
-- **FAQ Matching with RapidFuzz**  
-  Accurately matches user questions to a client-specific FAQ using advanced fuzzy string comparison.
+### Frontend Web Chat (Public UI)
+- Integrated a minimalist HTML/JS chat frontend (`index.html`) for direct user interaction.
+- Supports message submission, real-time feedback, and live query resolution via `/ask` endpoint.
 
-- **LLM-Powered Fallback**  
-  Integrates with Azure OpenAI to generate answers for questions not found in the FAQ.
+### FastAPI Web Server and Azure Hosting
+- Application served via `gunicorn` using a custom `startup.sh` script.
+- Deployed using Azure App Services (Python/Linux) with GitHub-integrated CI/CD.
 
-- **Client-Specific Configuration**  
-  Loads each client’s FAQ from a dedicated YAML file located at `clients/{client_id}/documents/faq.yaml`.
+### Secure CORS Configuration
+- Locked down CORS policy to allow only approved domains:
+  - `https://bankagent.moreyummy.com`
+  - `https://moreyummy.com`
+- Temporary support for `localhost:5500` allowed during development and removed post-deploy.
 
-- **Modular Design**  
-  Clean utility separation for logging, input sanitization, FAQ loading, and matching logic.
-
----
-
-## Security and Logging
-
-- **Environment Variable Management**  
-  API keys and client identifiers are stored securely in `.env` files and excluded from version control.
-
-- **Input Sanitization**  
-  User input is sanitized to remove potentially harmful characters (`<`, `>`, `%`, `{}`, etc.) and normalized for consistent processing. This mitigates risks such as prompt injection and malformed queries.
-
-- **Per-Session Logging**  
-  Logs are written to a dedicated `/logs/` directory with uniquely timestamped filenames. Each log captures:
-  - Client ID
-  - Raw and sanitized input
-  - FAQ match results
-  - GPT fallback activity  
-  No sensitive user data is retained.
-
-- **Resilient YAML Loading**  
-  Built-in checks confirm file existence and format, and the parser safely handles malformed or missing fields.
+### GitHub-Centered Deployment Pipeline
+- Full source-controlled pipeline, eliminating manual edits in Kudu.
+- Startup script (`startup.sh`) defines app entrypoint and Python environment activation.
 
 ---
 
-## Directory Structure
+## Core Features (Unchanged from v1.0)
+
+- **FAQ Matching with RapidFuzz**
+- **LLM Fallback via Azure OpenAI**
+- **Client-Specific Knowledge Bases**
+- **Per-Session Logging**
+- **Secure Input Sanitization**
+- **YAML File Handling with Safety Checks**
+
+---
+
+## Deployment Architecture
+
+Frontend → JavaScript Fetch
+https://bankagent.moreyummy.com/ask
+↓
+Backend → FastAPI Router
+|-> FAQ Matcher
+|-> Azure OpenAI GPT-4 Fallback
+↓
+Logging → /logs/session_<timestamp>.log
+
+---
+
+## Directory Structure (Updated)
 
 banking-agent/
-├── agent.py                    # Entry point for running the agent (currently main logic)
-├── main.py                     # (Recommended) Delegates logic, useful if extending with FastAPI/CLI
-├── requirements.txt            # Python dependencies (must include openai, python-dotenv, pyyaml, etc.)
-├── ROADMAP.md                  # Development roadmap (vision, milestones, priorities)
-├── RELEASE_NOTES.md            # Version history and release summaries
-├── .env                        # Environment variables (not checked into Git)
-├── .gitignore                  # Files/folders Git should ignore
-├── logs/                       # Auto-generated logs per session
-│   └── session_*.log
-├── clients/                    # Client-specific data/config
-│   └── demobank/
-│       └── documents/
-│           └── faq.yaml
-├── utils/                      # Supporting modules/utilities
-│   ├── logger.py
-│   ├── match_faq.py
-│   ├── sanitize.py
-│   └── yaml_loader.py
-└── tests/                      # (Optional but recommended) Unit tests for core modules (coming soon)
-    ├── test_match_faq.py
-    ├── test_sanitize.py
-    └── test_yaml_loader.py
+├── app/
+│ ├── api.py
+│ ├── models.py
+│ └── main.py
+├── clients/
+│ └── demobank/
+│ └── documents/
+│ └── faq.yaml
+├── static/
+│ └── index.html
+├── requirements.txt
+├── startup.sh
+├── .env.example
+├── logs/
+│ └── session_*.log
+├── .gitignore
+└── README.md
 
+
+---
+
+## Known Limitations
+
+- Frontend styling is minimal and will be updated in a future release.
+- No RAG (Retrieval-Augmented Generation) yet — FAQ-only responses.
+- Logging is local only (not yet integrated with Azure Monitoring or Application Insights).
 
 ---
 
 ## Planned Enhancements
 
-- Add a FastAPI or Flask interface for web-based interaction
-- Build a front-end UI for live query testing and demos
-- Implement schema validation for all YAML input files
-- Introduce client-specific configuration via JSON or environment profiles
-- Support RAG-based (Retrieval-Augmented Generation) workflows for large document sets
-- Containerize the application using Docker for scalable deployment
+- CSS/UI polish to match the main moreyummy.com site.
+- YAML expansion and full RAG support for long-form documents.
+- Add redeployment documentation for consistent multi-client rollout.
+- Docker containerization and optional Azure Container Apps migration.
+- Add API key authentication layer for frontend calls.
 
 ---
 
 ## Contact and Attribution
 
-This release is intended for internal evaluation and partner review.
+This release is intended for client demonstration, internal documentation, and early-stage partner onboarding.
 
-© 2025 Joel “Ed” Medina. All rights reserved.
-All software and documentation are the intellectual property of Joel Medina and MoreYummy.com. Unauthorized use, reproduction, or distribution is strictly prohibited without written permission.
+© 2025 Joel “Ed” Medina. All rights reserved.  
+All software and documentation are the intellectual property of Joel Medina and MoreYummy.com. Unauthorized use, reproduction, or distribution is prohibited without written permission.
 
-For updates, demos, licensing, or inquiries:
-Website: moreyummy.com
-Email: eddie.medina@gmail.com
-
-
+**Website:** [https://moreyummy.com](https://moreyummy.com)  
+**Email:** eddie.medina@gmail.com
