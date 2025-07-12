@@ -1,21 +1,179 @@
 faqs:
-  - question: "What are your hours of operation?"
-    answer: "Our lobby is open Monday through Friday, 9:00 AM to 5:00 PM. Drive-thru and ITM hours may vary by location."
-  - question: "How can I check my account balance after hours?"
-    answer: "You can log in to online banking or use our mobile app to check your balance 24/7."
-  - question: "I lost my debit card. What should I do?"
-    answer: "Please call our 24/7 card support line at 1-800-123-4567 to report a lost or stolen card immediately."
-  - question: "Can I deposit a check outside of business hours?"
-    answer: "Yes. Use our mobile banking app to deposit checks anytime, or visit an ATM that accepts deposits."
-  - question: "How do I reset my online banking password?"
-    answer: "Visit our login page and click “Forgot Password.” Follow the instructions to reset your credentials."
-  - question: "Are mobile deposits available immediately?"
-    answer: "Mobile deposits are typically available the next business day, but some deposits may take longer for verification."
-  - question: "Can I apply for a loan online?"
-    answer: "Yes. Visit our website at https://bank.regent to start a loan application at your convenience."
-  - question: "How can I contact customer service during off-hours?"
-    answer: "You can send us a secure message in online banking or call our 24/7 automated support line."
-  - question: "Is Zelle available for money transfers?"
-    answer: "Yes. You can send and receive money with Zelle through our mobile app or online banking."
-  - question: "I see a suspicious transaction. What should I do?"
-    answer: "Please call our fraud support line at 1-800-123-4567 immediately to report the issue."
+- question: "What are your branch hours?"
+  answer: "Regent Bank branch hours vary by location. You can view hours for each branch by visiting the Locations page. <a href='https://www.regent.bank/locations/'>Locations</a>"
+- question: "Where are your branch locations?"
+  answer: "Regent Bank has branches in Tulsa, Oklahoma City, Edmond, Broken Arrow, Nowata (all in Oklahoma), and Frisco, Texas. <a href='https://www.regent.bank/locations/'>Locations</a>"
+- question: "Is there a branch in Broken Arrow, Oklahoma?"
+  answer: "Yes, Regent Bank has a branch in Broken Arrow located at 5101 S. Aspen Avenue.
+    <a href='https://www.regent.bank/locations/broken-arrow/'>Locations</a>"
+- question: "Is there a branch in Edmond, Oklahoma?"
+  answer: "Yes, Regent Bank has a branch in Edmond located at 2801 E. Memorial Road.
+    <a href='https://www.regent.bank/locations/edmond/'>Locations</a>"
+- question: "Is there a branch in Frisco Texas?"
+  answer: "Yes, Regent Bank has a branch in Frisco located at 2449 Legacy Drive. <a
+    href='https://www.regent.bank/locations/frisco/'>Locations</a>"
+- question: "Is there a branch in Nowata, Oklahoma?"
+  answer: "Yes, Regent Bank has a branch in Nowata located at 101 E. Cherokee Avenue.
+    <a href='https://www.regent.bank/locations/nowata/'>Locations</a>"
+- question: "Is there a branch in Oklahoma City, Oklahoma?"
+  answer: "Yes, Regent Bank has a branch in Oklahoma City located at 701 NW 8th Street.
+    <a href='https://www.regent.bank/locations/oklahoma-city/'>Locations</a>"
+- question: "Is there a branch in Tulsa, Oklahoma?"
+  answer: "Yes, Regent Bank has multiple branches in Tulsa including their headquarters
+    located at 7136 S. Yale Avenue. <a href='https://www.regent.bank/locations/tulsa/'>Locations</a>"
+- question: "Where is Regent Bank headquarters?"
+  answer: "Regent Bank's headquarters is located at 7136 S. Yale Avenue, Tulsa, Oklahoma.
+    <a href='https://www.regent.bank/locations/tulsa/'>Locations</a>"
+- question: "How do I reset my online banking password?"
+  answer: "To reset your online banking password, please contact Regent Bank directly through the contact page or call customer support. <a href='https://www.regent.bank/contact/'>Contact</a>"
+- question: "Where are your ATMs located?"
+  answer: "ATMs are available at each Regent Bank branch. You can find ATM locations by visiting the Locations page. <a href='https://www.regent.bank/locations/'>Locations</a>"
+- question: "How do I open a checking account?"
+  answer: "You can open a personal or business checking account online through Regent
+    Bank's digital account opening platform. <a href='https://open.regent.bank/products?customerCategory=business&productType=all'>Products?customercategory=business&producttype=all</a>
+    <a href='https://open.regent.bank/products?customerCategory=personal&productType=all'>Products?customercategory=personal&producttype=all</a>"
+- question: "What is the minimum balance for a savings account?"
+  answer: "Minimum balance requirements vary depending on the savings product. Please
+    review the personal and business product pages for details. <a href='https://open.regent.bank/products?customerCategory=business&productType=all'>Products?customercategory=business&producttype=all</a>
+    <a href='https://open.regent.bank/products?customerCategory=personal&productType=all'>Products?customercategory=personal&producttype=all</a>"
+- question: "How can I apply for a loan?"
+  answer: "You can apply for personal, SBA, or commercial loans through Regent Bank's
+    website. Mortgage loan applications are also available online. <a href='https://www.regent.bank/personal/personal-lending/'>Personal</a>
+    <a href='https://www.regent.bank/business/business-lending/sba-loans/'>Business</a>
+    <a href='https://www.regent.bank/business/business-lending/commercial-lending/'>Business</a>
+    <a href='https://www.regent.bank/business/business-lending/commercial-lending/business-lending-checklist/'>Business</a>
+    <a href='https://mortgage.regent.bank/'>Morgages</a>"
+- question: "What is the status of my loan application?"
+  answer: "Please contact Regent Bank directly for assistance with the status of your loan application. <a href='https://www.regent.bank/lending-team/'>Lending team</a>"
+- question: "Do you offer small business banking services?"
+  answer: "Yes, Regent Bank offers a full suite of small business services including
+    checking, savings, CDs, business credit cards, SBA and commercial lending, online
+    banking, insurance, and treasury services. <a href='https://www.regent.bank/business/business-checking/'>Business</a>
+    <a href='https://www.regent.bank/savings/'>Savings</a> <a href='https://www.regent.bank/business-cds/'>Business
+    cds</a> <a href='https://www.regent.bank/business/business-credit-cards/'>Business</a>
+    <a href='https://www.regent.bank/business/business-lending/sba-loans/'>Business</a>
+    <a href='https://www.regent.bank/business/business-lending/commercial-lending/'>Business</a>
+    <a href='https://www.regent.bank/treasury-services/receivables/remote-deposite-capture/'>Treasury
+    services</a> <a href='https://www.regent.bank/treasury-services/cash-management/business-online-banking/'>Treasury
+    services</a> <a href='https://www.regentinsurance.com/'>Link</a> [](https://mortgage.regent.bank/)
+    <a href='https://www.regent.bank/travel-club/'>Travel club</a> <a href='https://regentprivatewealth.com/'>Link</a>"
+- question: "How do I report a lost or stolen debit card?"
+  answer: "To report a lost or stolen debit card, visit Regent Bank's contact page 
+    and follow the instructions under the 'Lost or Stolen Card' section. <a href='https://www.regent.bank/contact/#lost-stolen-card'>Contact</a>"
+- question: "What are your current interest rates?"
+  answer: "Regent Bank offers competitive interest rates. You can find current APY
+    details for checking, CDs, and IRAs on their website. <a href='https://www.regent.bank/personal/personal-checking/#:~:text=Annual%20Percentage%20Yield%20%E2%80%93%202.02%25%20APY'>Personal</a>
+    <a href='Contact%20Us'>Link</a> <a href='https://www.regent.bank/personal/personal-cds-iras/#:~:text=CD%20Terms%20Available%20(Minimum%20Deposit'>Personal</a>
+    <a href='120%20Months%20%7C%202.00%25%20APY1'>Link</a>"
+- question: "Can I get a mortgage pre-approval?"
+  answer: "Yes, you can begin the mortgage pre-approval process online through the 
+    Regent Mortgage portal. [](https://mortgage.regent.bank/)"
+- question: "What do I need to open a business account?"
+  answer: "To open a business account, you'll need required business documents and 
+    can begin the process online through the business checking portal. <a href='https://www.regent.bank/business/business-checking/'>Business</a>
+    <a href='https://open.regent.bank/products?customerCategory=business&productType=checking'>Products?customercategory=business&producttype=checking</a>"
+- question: "Do you offer mobile deposit?"
+  answer: "Yes, mobile deposit is available through the Regent Bank mobile banking 
+    app. <a href='https://www.regent.bank/mobile-banking/'>Mobile banking</a>"
+- question: "What should I do if I suspect fraud on my account?"
+  answer: "If you suspect fraud on your account, visit Regent Bank's fraud protection 
+    page for steps to take and where to report the incident. <a href='https://www.regent.bank/how-to-protect-yourself-from-fraud-and-where-to-report-it/'>How
+    to protect yourself from fraud and where to report it</a> <a href='https://vimeo.com/952023064/aebf2d3232'>Vimeo</a>"
+- question: "Can I get a copy of my bank statement?"
+  answer: "Yes, you can enroll in eStatements to receive digital copies of your bank 
+    statements through online banking. <a href='https://www.regent.bank/estatements/'>Estatements</a>"
+- question: "How do I transfer money between accounts?"
+  answer: "Money transfers between accounts can be managed through Regent Bank's online 
+    banking and treasury management tools. <a href='https://www.regent.bank/treasury-services/cash-management/'>Treasury
+    services</a>"
+- question: "What is your routing number?"
+  answer: "Regent Bank's routing number is 103101356. <a href='https://www.regent.bank/contact/'>Contact</a>"
+- question: "What is your NMLS number?"
+  answer: "Regent Bank's NMLS number is 464417. <a href='https://www.regent.bank/contact/'>Contact</a>"
+- question: "How do I set up direct deposit?"
+  answer: "You can set up direct deposit by using Regent Bank's remote deposit capture 
+    and treasury services platform. <a href='https://www.regent.bank/treasury-services/receivables/remote-deposite-capture/'>Treasury
+    services</a>"
+- question: "Do you offer Zelle or peer-to-peer payments?"
+  answer: "I do not have information on that. <a href='https://www.regent.bank/personal/personal-banking/'>Personal</a>"
+- question: "What is your overdraft policy?"
+  answer: "Please refer to Regent Bank's disclosures and agreements page for complete 
+    information on their overdraft policy. <a href='https://www.regent.bank/disclosures-and-agreements'>Disclosures
+    and agreements</a>"
+- question: "Can I increase my credit card limit?"
+  answer: "Yes, Regent Bank offers options to manage your credit card account, including 
+    increasing your credit limit. <a href='https://www.regent.bank/personal/personal-credit-cards/'>Personal</a>"
+- question: "What are the benefits of your credit cards?"
+  answer: "Regent Bank's credit cards offer features such as low interest rates, rewards, 
+    and fraud protection. <a href='https://www.regent.bank/personal/personal-credit-cards/'>Personal</a>"
+- question: "What is your policy on non-resident account holders?"
+  answer: "Please contact Regent Bank directly to learn about account options for non-residents. 
+    <a href='https://www.regent.bank/contact/'>Contact</a>"
+- question: "What documents are required for a commercial loan?"
+  answer: "Regent Bank provides a Commercial Lending Checklist that outlines the documents 
+    required for applying for a commercial loan. <a href='https://www.regent.bank/business/business-lending/commercial-lending/business-lending-checklist/'>Business</a>
+    <a href='https://www.regent.bank/business/business-lending/commercial-lending/'>Business</a>"
+- question: "How long does it take to process a mortgage application?"
+  answer: "The timeline for mortgage processing can vary. Visit Regent Bank's mortgage portal to begin your application and receive details on estimated timelines. [](https://mortgage.regent.bank/)"
+- question: "Where can I find your fee schedule?"
+  answer: "Regent Bank's fee schedule is available on their disclosures and agreements page. <a href='https://www.regent.bank/disclosures-and-agreements/'>Disclosures
+    and agreements</a>"
+- question: "What are your business loan interest rates?"
+  answer: "Business loan rates vary based on loan type and credit qualifications. Visit
+    Regent Bank's commercial lending page for more information. <a href='https://www.regent.bank/business/business-lending/commercial-lending/'>Business</a>"
+- question: "Do you offer SBA loans?"
+  answer: "Yes, Regent Bank offers SBA loans designed to support small businesses with 
+    competitive terms and flexible structures. <a href='https://www.regent.bank/business/business-lending/sba-loans/'>Business</a>"
+- question: "How do I enroll in eStatements?"
+  answer: "You can enroll in eStatements through online banking or by visiting Regent 
+    Bank's eStatements page for step-by-step instructions. <a href='https://www.regent.bank/estatements/'>Estatements</a>"
+- question: "Can I schedule an appointment with a banker?"
+  answer: "Yes, you can contact Regent Bank to schedule an appointment with a banker 
+    using the contact form or branch phone numbers listed. <a href='https://www.regent.bank/contact/'>Contact</a>"
+- question: "Do you have personal banking?"
+  answer: "Yes, Regent Bank offers a wide range of personal banking services including 
+    checking, savings, loans, and credit cards. <a href='https://www.regent.bank/personal/'>Personal</a>"
+- question: "How do I reorder checks?"
+  answer: "You can reorder checks through Regent Bank's third-party check ordering 
+    portal at OrderMyChecks.com. <a href='https://www.ordermychecks.com/login_a.jsp'>OrderMyChecks.com</a>"
+- question: "What are your observed holidays?"
+  answer: "Regent Bank's observed holidays are listed on their official holiday schedule 
+    page. <a href='https://www.regent.bank/bank-observed-holidays/'>Bank observed
+    holidays</a>"
+- question: "What are your values?"
+  answer: "Regent Bank's core values focus on integrity, innovation, community, and a strong commitment to faith-based leadership. <a href='https://www.regent.bank/values/'>Values</a>"
+- question: "Who are the bank officers or top leaders?"
+  answer: "Regent Bank's leadership team includes experienced professionals committed 
+    to community-focused banking. You can find a full list on their leadership page.
+    <a href='https://www.regent.bank/leadership/'>Leadership</a>"
+- question: "Who are the bank lenders or lending team?"
+  answer: "Regent Bank's lending team includes specialists in commercial, small business, 
+    and personal lending. Visit the page to find a lender near you. <a href='https://www.regent.bank/lending-team/'>Lending
+    team</a>"
+- question: "What is Regent Elevate podcast?"
+  answer: "The Regent Elevate podcast features leadership insights, business tips, 
+    and community stories. Episodes are shared regularly through Regent Bank's blog.
+    <a href='https://www.regent.bank/blog/'>Blog</a>"
+- question: "Where do I find Daily Devotions information?"
+  answer: "Daily Devotions are available on Regent Bank's dedicated page and include spiritual encouragement shared by leaders and guests. <a href='https://www.regent.bank/dailydevo'>Dailydevo</a>"
+- question: "Does Regent have a blog?"
+  answer: "Yes, Regent Bank's blog features articles on leadership, community impact, financial tips, and news from across the bank. <a href='https://www.regent.bank/blog/'>Blog</a>"
+- question: "Where do I find Regent's mobile apps?"
+  answer: "Regent Bank's mobile apps are available on the Apple App Store and Google 
+    Play. Search for 'Regent Bank' or follow the links below. <a href='https://apps.apple.com/app/regent-bank/id6593659454'>Apple
+    App Store</a> <a href='https://play.google.com/store/apps/details?id=bank.bankregent.grip'>Google
+    Play Store</a>"
+- question: "Where is Sean Kouplen's podcast?"
+  answer: "Sean Kouplen hosts 'The 94X Kingdom Driven CEO' podcast, available on Apple
+    Podcasts. <a href='https://podcasts.apple.com/us/podcast/the-94x-kingdom-driven-ceo/id1589613192'>Apple
+    App Store</a>"
+- question: "How can I contact Regent Bank?"
+  answer: "You can contact Regent Bank in the following ways:
+    •**Phone:** Call their main line at (877) 488-4790. You can also reach specific
+    branches directly via the phone numbers listed on their Locations page.
+    • **Online Contact Form:** Visit the Contact page at <a href='https://www.regent.bank/contact/'>https://www.regent.bank/contact/</a>
+    to submit a message to the appropriate department.
+    • **Visit a Branch:** Use the <a href='https://www.regent.bank/locations/'>Locations
+    page</a> to find addresses, hours, and contact details for each branch.
+    • **Lost or Stolen Debit Card:** Go to <a href='https://www.regent.bank/contact/#lost-stolen-card'>Lost/Stolen Card</a>
+    for immediate steps and numbers to report a lost or stolen card."
