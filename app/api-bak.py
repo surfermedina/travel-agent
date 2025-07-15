@@ -56,7 +56,7 @@ def ask_question(payload: UserQuery):
     answer = find_best_match(user_question, faq_data)
 
     if answer:
-        logger.info(f"[API] [FAQ MATCH] Answer: {answer[:300]}")
+        logger.info("[API] [FAQ MATCH] Answer returned from FAQ.")
         return {"source": "faq", "answer": answer}
 
     logger.info("[API] [NO FAQ MATCH] Querying GPT...")
@@ -86,7 +86,6 @@ def ask_question(payload: UserQuery):
             {"role": "assistant", "content": gpt_answer}
         )
 
-        logger.info(f"[API] [GPT RESPONSE] Answer: {gpt_answer[:300]}")
         return {"source": "gpt", "answer": gpt_answer}
 
     except Exception as e:

@@ -1,62 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
+<!-- saved from url=(0042)https://bankagent.moreyummy.com/index.html -->
+<html lang="en" style="--app-height: 811px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <title>Banking Assistant</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./index_files/style.css">
 </head>
 <body>
   <div id="chat-container">
+    <!--h2>Banking Assistant</h2-->
 
-    <!-- Chat Window -->
     <div id="chat-window"></div>
 
-    <!-- Message Input Form -->
     <form id="query-form">
-      <input
-        type="text"
-        id="user-input"
-        placeholder="Ask your question here..."
-        required
-      />
+      <input type="text" id="user-input" placeholder="Ask your question here..." required="">
       <button type="submit">Send</button>
     </form>
   </div>
 
-  <!-- Chat Logic -->
   <script>
     const form = document.getElementById("query-form");
     const input = document.getElementById("user-input");
     const chatWindow = document.getElementById("chat-window");
-
-    //const API_URL = "http://localhost:8000/ask"; // Local testing
-    const API_URL = "https://bankagent-moreyummy.azurewebsites.net/ask";
-    //const session_id = "demo-session";
+	const API_URL = "http://127.0.0.1:8000/ask";
+	const session_id = "demo-session";
     const client_id = "demobank";
 
-    // Session ID generation (per tab)
-    let session_id = sessionStorage.getItem("session_id");
-    if (!session_id) {
-      session_id = crypto.randomUUID();
-      sessionStorage.setItem("session_id", session_id);
-    }
-
-    // Append message to chat window
     function addMessage(role, text) {
       const msg = document.createElement("div");
       msg.classList.add("message", role);
-
-      // Allow basic HTML like <a> and force links to open in new tab
-      msg.innerHTML = text.replace(
-        /<a\b(?![^>]*\btarget=)/gi,
-        '<a target="_blank" '
-      );
-
+      msg.innerText = text;
       chatWindow.appendChild(msg);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
-    // Handle form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const message = input.value.trim();
@@ -72,12 +48,12 @@
           body: JSON.stringify({
             session_id,
             client_id,
-            question: message
+            question: message   // corrected field name
           }),
         });
 
         const data = await response.json();
-        console.log(data); // Debug log
+        console.log(data); // For debugging
         addMessage("assistant", data.answer || "No answer received.");
       } catch (err) {
         console.error(err);
@@ -86,7 +62,7 @@
     });
   </script>
 
-  <!-- Viewport Height Fix for Mobile -->
+<!-- This is for controlling the window size on mobile, but it's not working. -->
   <script>
     function setAppHeight() {
       const doc = document.documentElement;
@@ -96,5 +72,7 @@
     window.addEventListener('orientationchange', setAppHeight);
     setAppHeight();
   </script>
-</body>
-</html>
+	
+
+
+</body></html>

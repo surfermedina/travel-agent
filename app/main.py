@@ -3,14 +3,13 @@ main.py
 
 This is the entry point for the Banking Agent FastAPI server.
 
-It defines a RESTful API with a single `/ask` endpoint that receives
-questions from users and routes them to the agent logic for response generation.
+It sets up the FastAPI application, middleware, and routing.
 
 The application:
 - Loads environment variables from the `.env` file
-- Accepts POST requests containing a user message
-- Passes the message to the agent for processing
-- Returns the agent's response as JSON
+- Adds CORS middleware to allow frontend access
+- Includes API routes defined in `app/api.py`
+- Provides a root endpoint for basic health checks
 
 To run the server locally:
     uvicorn main:app --reload
@@ -34,6 +33,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # "http://localhost:5500",          # ← your local test page (commented out for live deployment)
+        # "http://127.0.0.1:5500",          # ← alternative local access (commented out)
         "https://bankagent.moreyummy.com",
         "https://moreyummy.com"
     ],

@@ -1,79 +1,199 @@
 /* ==== GENERAL PAGE ==== */
 html, body {
+  width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
-  background-color: #f6f8fa;
-  overflow: hidden; /* Prevent window scroll */
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: 'Syne', sans-serif;
+  background-color: #030014;
+  color: #F6F6F699;
+  overflow: hidden;
 }
 
 /* ==== CONTAINER ==== */
 #chat-container {
   width: 100%;
-  max-width: 600px;
-  height: 70vh; /* 👈 Fixed height (adjust as needed) */
-  margin: 5vh auto;
-  background: white;
+  height: 100vh;
+  height: 100dvh;  /* Dynamic height for iOS keyboard fix */
+  max-width: none;
+  margin: 0;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  background: #030014;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
+  border-radius: 40px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ==== CHAT WINDOW ==== */
 #chat-window {
-  flex-grow: 1;              /* 👈 fills remaining space */
+  flex-grow: 1;
   overflow-y: auto;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 15px;
-  background-color: #fafafa;
+  padding: 20px;
+  background-color: #030014;
+  color: #F6F6F699;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  border: 1px solid #211E33;
+  border-bottom: none;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ==== MESSAGES ==== */
 .message {
   margin: 10px 0;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 32px;
   white-space: pre-wrap;
+  display: inline-block;
+  max-width: 66%;
+  word-wrap: break-word;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
+/* User message bubble */
 .user {
-  background-color: #d0ebff;
-  text-align: right;
+  background-color: #1C1B2A;
+  color: #FFFFFF;
+  margin-left: auto;
+  text-align: left;
 }
 
+/* Assistant message (no bubble style) */
 .assistant {
-  background-color: #e2f7e1;
+  /* background-color: #1A2335; */
+  background-co: none;
+  color: #FFFFFF;
+  margin-right: auto;
   text-align: left;
+}
+
+/* ==== LINK STYLING FOR ASSISTANT RESPONSES ==== */
+.message.assistant a {
+  background-color: transparent;
+  text-decoration: none;
+  color: #CC3366;
+}
+
+.message.assistant a:hover,
+.message.assistant a:active {
+  color: #333366;
+}
+
+.message.assistant a:not([href]):not([tabindex]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.message.assistant a:not([href]):not([tabindex]):hover,
+.message.assistant a:not([href]):not([tabindex]):focus {
+  color: inherit;
+  text-decoration: none;
+}
+
+.message.assistant a:not([href]):not([tabindex]):focus {
+  outline: 0;
 }
 
 /* ==== FORM ==== */
 form {
   display: flex;
   gap: 10px;
+  padding: 20px;
+  background-color: #030014;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  border: 1px solid #211E33;
+  border-top: none;
 }
 
 #user-input {
   flex-grow: 1;
-  padding: 10px;
+  padding: 16px 24px;
   font-size: 16px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 100px;
+  border: 1px solid #211E33;
+  background-color: transparent;
+  color: #F6F6F6;
+  font-family: 'Syne', sans-serif;
+  outline: none;
+}
+
+#user-input::placeholder {
+  color: #F6F6F699;
 }
 
 button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 1px solid #1C75BC;
+  padding: 18px 32px;
+  border-radius: 32px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #1C75BC;
+  border-color: transparent;
+  color: #FFFFFF;
+}
+
+/* ==== HEIGHT FIXES ==== */
+html, body {
+  height: var(--app-height);
+}
+#chat-container {
+  height: var(--app-height);
+}
+
+/* ==== MOBILE STYLES ==== */
+@media (max-width: 600px) {
+  form {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 0;
+  }
+
+  #user-input {
+    width: 100%;
+    flex-grow: unset;
+    font-size: 14px;
+    padding: 14px 20px;
+    box-sizing: border-box;
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+    border-radius: 100px;
+    box-sizing: border-box;
+  }
+
+  #chat-window {
+    padding: 0px;
+  }
+
+  #chat-container {
+    padding: 0px;
+    padding-bottom: 0px;
+    height: 65vh;
+  }
+
+  .assistant {
+    width: 95%;
+    max-width: 95%;
+    display: block;
+  }
 }
