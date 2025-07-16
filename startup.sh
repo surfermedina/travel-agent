@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Log startup steps
 echo "===== RUNNING STARTUP.SH =====" >> /home/LogFiles/startup.log
 echo "Running from $(pwd)" >> /home/LogFiles/startup.log
 
@@ -10,14 +9,19 @@ if [ -f /home/site/wwwroot/output.tar.gz ]; then
   tar -xzf /home/site/wwwroot/output.tar.gz -C /home/site/wwwroot >> /home/LogFiles/startup.log 2>&1
   echo "Removing tarball..." >> /home/LogFiles/startup.log
   rm /home/site/wwwroot/output.tar.gz
+else
+  echo "No output.tar.gz found." >> /home/LogFiles/startup.log
 fi
 
-# Install pip and requirements
-echo "Installing/upgrading pip and packages..." >> /home/LogFiles/startup.log
-python3 -m pip install --upgrade pip >> /home/LogFiles/startup.log 2>&1
+# Activate Oryx-created virtualenv
+echo "Activating virtualenv..." >> /home/LogFiles/startup.log
+source /home/site/wwwroot/antenv/bin/activate >> /home/LogFiles/startup.log 2>&1
+
+# Install pip requirements (again, just in case)
+echo "Installing packages from requirements.txt..." >> /home/LogFiles/startup.log
 pip install -r /home/site/wwwroot/requirements.txt >> /home/LogFiles/startup.log 2>&1
 
-# Launch app with Gunicorn + UvicornWorker
+# Launch Gunicorn
 echo "Starting Gunicorn..." >> /home/LogFiles/startup.log
 exec gunicorn app.main:app \
   --workers 1 \
