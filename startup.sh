@@ -13,13 +13,10 @@ else
   echo "No output.tar.gz found." >> /home/LogFiles/startup.log
 fi
 
-# Activate Oryx-created virtualenv
-echo "Activating virtualenv..." >> /home/LogFiles/startup.log
-source /home/site/wwwroot/antenv/bin/activate >> /home/LogFiles/startup.log 2>&1
-
-# Install pip requirements (again, just in case)
+# Attempt to use system-wide pip3 and python3
 echo "Installing packages from requirements.txt..." >> /home/LogFiles/startup.log
-pip install -r /home/site/wwwroot/requirements.txt >> /home/LogFiles/startup.log 2>&1
+python3 -m pip install --upgrade pip >> /home/LogFiles/startup.log 2>&1
+python3 -m pip install -r /home/site/wwwroot/requirements.txt >> /home/LogFiles/startup.log 2>&1
 
 # Launch Gunicorn
 echo "Starting Gunicorn..." >> /home/LogFiles/startup.log
