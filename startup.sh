@@ -8,8 +8,8 @@ echo "Running from $(pwd)" >> /home/LogFiles/startup.log
 if [ -f /home/site/wwwroot/output.tar.gz ]; then
   echo "Extracting output.tar.gz..." >> /home/LogFiles/startup.log
   tar -xzf /home/site/wwwroot/output.tar.gz -C /home/site/wwwroot >> /home/LogFiles/startup.log 2>&1
-else
-  echo "No output.tar.gz found." >> /home/LogFiles/startup.log
+  echo "Removing tarball..." >> /home/LogFiles/startup.log
+  rm /home/site/wwwroot/output.tar.gz
 fi
 
 # Install pip and requirements
