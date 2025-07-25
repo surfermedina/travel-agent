@@ -21,3 +21,7 @@ logs/
 # System files
 .DS_Store
 Thumbs.db
+
+# Debug & tests folder
+debug/
+tests/

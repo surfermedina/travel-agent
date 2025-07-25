@@ -29,9 +29,7 @@
     const input = document.getElementById("user-input");
     const chatWindow = document.getElementById("chat-window");
 
-    //const API_URL = "http://localhost:8000/ask"; // Local testing
-    const API_URL = "https://bankagent-moreyummy.azurewebsites.net/ask";
-    //const session_id = "demo-session";
+    const API_URL = "http://localhost:8000/ask"; // Local testing
     const client_id = "demobank";
 
     // Session ID generation (per tab)
@@ -44,7 +42,7 @@
     // Append message to chat window
     function addMessage(role, text) {
       const msg = document.createElement("div");
-      msg.classList.add("message", role);
+      msg.classList.add("message", role, "fade-in");
 
       // Allow basic HTML like <a> and force links to open in new tab
       msg.innerHTML = text.replace(
@@ -56,6 +54,14 @@
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    // Create typing indicator
+    function createTypingIndicator() {
+      const typing = document.createElement("div");
+      typing.className = "assistant typing";
+      typing.innerHTML = `<span>Typing</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>`;
+      return typing;
+    }
+
     // Handle form submission
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -64,6 +70,11 @@
 
       addMessage("user", message);
       input.value = "";
+
+      // Add typing indicator
+      const typingIndicator = createTypingIndicator();
+      chatWindow.appendChild(typingIndicator);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
 
       try {
         const response = await fetch(API_URL, {
@@ -77,12 +88,21 @@
         });
 
         const data = await response.json();
-        console.log(data); // Debug log
+        typingIndicator.remove();
         addMessage("assistant", data.answer || "No answer received.");
       } catch (err) {
         console.error(err);
+        typingIndicator.remove();
         addMessage("assistant", "Error: Unable to connect to server.");
       }
+    });
+  </script>
+
+  <!-- Initial greeting message -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const greeting = "Hello! Welcome to Regent Bank. How can I assist you today?";
+      addMessage("assistant", greeting);
     });
   </script>
 

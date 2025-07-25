@@ -33,8 +33,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        # "http://localhost:5500",          # ← your local test page (commented out for live deployment)
-        # "http://127.0.0.1:5500",          # ← alternative local access (commented out)
+        # your local test page (commented out for live deployment)
+        "http://localhost:5000",
+        "http://localhost:5500",          
+        "http://127.0.0.1:5500",
         "https://bankagent.moreyummy.com",
         "https://moreyummy.com"
     ],

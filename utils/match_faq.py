@@ -1,43 +1,73 @@
-"""
-match_faq.py
-
-Helper function for matching user questions to predefined FAQ entries
-using fuzzy string matching.
-
-This utility module compares a user's input against a list of FAQs and returns
-the best-matched answer if the similarity score meets a given threshold.
-
-Uses rapidfuzz for efficient and accurate string comparison.
-
-Example FAQ entry format:
-- {"q": "What are your hours?", "a": "We’re open Monday through Friday, 9am to 5pm."}
-
-Usage:
-    best_answer = find_best_match("What time do you open?", faq_list)
-"""
-
 from rapidfuzz import fuzz
+from typing import List, Optional, Dict
 
-def find_best_match(question: str, faq_list: list[dict], threshold: int = 80) -> str | None:
+STOCK_PROMPT_FOR_CLARITY = (
+    "Thanks! Could you tell me a little more about what you're looking for?"
+)
+
+# New in-memory session suppression tracker
+session_flags = {}  # e.g., { "session_id": { "suppressed": True } }
+
+def find_best_match(
+    question: str,
+    faq_list: List[Dict[str, str]],
+    threshold: int = 88,
+    suppress_short_matches: bool = False,
+    session_id: Optional[str] = None
+) -> Optional[str]:
     """
-    Finds the best-matching FAQ answer for a given question.
+    Finds the best-matching FAQ answer for a given question, with short input and false-match protection.
 
     Args:
-        question (str): The user's input question.
-        faq_list (list[dict]): A list of FAQ entries with keys 'q' (question) and 'a' (answer).
-        threshold (int): Minimum similarity score (0-100) required to accept a match.
+        question (str): The user's input question (should be preprocessed).
+        faq_list (list[dict]): A list of FAQ entries with keys 'q' and 'a'.
+        threshold (int): Minimum fuzzy match score required to accept a match.
+        suppress_short_matches (bool): Avoid matching short FAQ entries when input contains risky terms.
+        session_id (str | None): Session ID used for tracking repeated suppression.
 
     Returns:
-        str | None: The best-matching answer, or None if no match exceeds the threshold.
+        str | None: A matched answer, stock clarification prompt, or None.
     """
-    best = {"score": 0, "answer": None}
+    question = question.strip().lower()
+
+    # PREVENT matching on extremely short non-numeric input
+    if len(question) <= 2 and not question.isnumeric():
+        print(f"[DEBUG] Input '{question}' is too short and non-numeric — skipping FAQ match")
+        return None
+
+    # Raise threshold for very short queries
+    if len(question.split()) <= 2:
+        threshold = max(threshold, 90)
+
+    best = {"score": 0, "answer": None, "question_length": None}
 
     for entry in faq_list:
-        # Compare user input to the FAQ question using partial match
-        score = fuzz.partial_ratio(question.lower(), entry["q"].lower())
-        
+        score = fuzz.partial_ratio(question, entry["q"].lower())
         if score > best["score"] and score >= threshold:
             best["score"] = score
             best["answer"] = entry["a"]
+            best["question_length"] = len(entry["q"].split())
+
+    print(f"[DEBUG] Fuzzy match: '{question}' → score: {best['score']} | matched: {best['answer'] is not None}")
+
+    # --- Suppression logic with session awareness ---
+    if best["score"] >= threshold and suppress_short_matches:
+        if best["question_length"] is not None and best["question_length"] <= 2:
+            if session_id:
+                # Check if we've already suppressed this session
+                suppressed_once = session_flags.get(session_id, {}).get("suppressed", False)
+
+                if suppressed_once:
+                    print("[DEBUG] Suppression already triggered for this session — skipping FAQ match")
+                    return None  # Let GPT handle it
+                else:
+                    # Mark suppression for this session
+                    session_flags.setdefault(session_id, {})["suppressed"] = True
+                    print("[DEBUG] Suppressing short FAQ match due to sensitive input — returning stock prompt.")
+                    return STOCK_PROMPT_FOR_CLARITY
+            else:
+                # No session tracking — still suppress once
+                print("[DEBUG] Suppressing short FAQ match (no session tracking) — returning stock prompt.")
+                return STOCK_PROMPT_FOR_CLARITY
 
     return best["answer"]
