@@ -20,6 +20,7 @@ echo "Which gunicorn: $(which gunicorn)" >> $LOGFILE
 # Start gunicorn
 echo "Starting Gunicorn..." >> $LOGFILE
 exec gunicorn app.main:app \
+  --chdir /home/site/wwwroot \
   --workers 1 \
   --worker-class uvicorn.workers.UvicornWorker \
   --bind=0.0.0.0:8000 >> $LOGFILE 2>&1
