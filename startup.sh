@@ -1,19 +1,25 @@
 #!/bin/bash
 
-echo "===== RUNNING STARTUP.SH =====" >> /home/LogFiles/startup.log
-echo "Running from $(pwd)" >> /home/LogFiles/startup.log
-echo "PATH is: $PATH" >> /home/LogFiles/startup.log
+LOGFILE=/home/LogFiles/startup.log
+
+echo "===== RUNNING STARTUP.SH =====" >> $LOGFILE
+echo "Running from $(pwd)" >> $LOGFILE
+echo "PATH is: $PATH" >> $LOGFILE
+
+# Change directory to ensure Python imports app.main properly
+echo "Switching to app root..." >> $LOGFILE
+cd /home/site/wwwroot >> $LOGFILE 2>&1
 
 # Activate virtual environment
-echo "Activating venv..." >> /home/LogFiles/startup.log
-source /home/site/wwwroot/antenv/bin/activate >> /home/LogFiles/startup.log 2>&1
+echo "Activating venv..." >> $LOGFILE
+source antenv/bin/activate >> $LOGFILE 2>&1
 
 # Log gunicorn path
-echo "Which gunicorn: $(which gunicorn)" >> /home/LogFiles/startup.log
+echo "Which gunicorn: $(which gunicorn)" >> $LOGFILE
 
 # Start gunicorn
-echo "Starting Gunicorn..." >> /home/LogFiles/startup.log
-exec gunicorn main:app \
+echo "Starting Gunicorn..." >> $LOGFILE
+exec gunicorn app.main:app \
   --workers 1 \
   --worker-class uvicorn.workers.UvicornWorker \
-  --bind=0.0.0.0:8000 >> /home/LogFiles/startup.log 2>&1
+  --bind=0.0.0.0:8000 >> $LOGFILE 2>&1
