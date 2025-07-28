@@ -2,29 +2,35 @@
 logger.py
 
 Provides a reusable logger for the banking agent system.
-Logs to both console and a file named per session in the /logs directory.
+Logs to both console and a file named per session.
+Writes to /logs locally or /home/LogFiles/app_logs on Azure.
 """
 
 import logging
 import os
 from datetime import datetime
 
+def determine_log_dir() -> str:
+    azure_log_dir = "/home/LogFiles/app_logs"
+    local_log_dir = "logs"
+
+    # More reliable check for Azure App Service
+    if os.environ.get("WEBSITE_SITE_NAME"):
+        os.makedirs(azure_log_dir, exist_ok=True)
+        return azure_log_dir
+    else:
+        os.makedirs(local_log_dir, exist_ok=True)
+        return local_log_dir
+
 def get_logger(name: str = "banking_agent") -> logging.Logger:
-    # Ensure the logs directory exists
-    log_dir = "logs"
-    os.makedirs(log_dir, exist_ok=True)
-
-    # Format the log filename using current timestamp
+    log_dir = determine_log_dir()
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_filename = f"{log_dir}/session_{timestamp}.log"
+    log_filename = os.path.join(log_dir, f"session_{timestamp}.log")
 
-    # Create logger instance
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
-    # Prevent adding duplicate handlers during reloads
     if not logger.handlers:
-
         # Console handler
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
@@ -40,7 +46,6 @@ def get_logger(name: str = "banking_agent") -> logging.Logger:
         )
         file_handler.setFormatter(file_format)
 
-        # Add both handlers
         logger.addHandler(console_handler)
         logger.addHandler(file_handler)
 
