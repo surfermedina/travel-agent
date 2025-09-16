@@ -1,0 +1,29 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Logs
+logs/
+*.log
+
+# Local vector DB / indexes
+vector-index/
+
+# Environment files (never bake secrets into images)
+.env
+config/*.env
+
+# Node/npm leftovers (if any experiments with frontend)
+node_modules/
+dist/
+build/
+
+# OS/editor junk
+.DS_Store
+*.swp
