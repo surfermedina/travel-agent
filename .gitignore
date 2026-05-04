@@ -28,8 +28,10 @@ examples/images/*
 .DS_Store
 Thumbs.db
 
-# Debug & tests folder
+# Debug, test folders, and sample prompts, archives
 debug/
+prompts/
+archives/
 
 # Runtime vector DB storage
 vector-index/
