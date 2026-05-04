@@ -3,6 +3,7 @@
 
 # --- FastAPI & typing imports ---
 from fastapi import APIRouter, HTTPException           # APIRouter allows modular route organization
+from fastapi.responses import StreamingResponse
 from app.models import UserQuery, AgentResponse        # Pydantic models for input/output validation
 
 # --- Internal modules for processing ---
@@ -16,7 +17,10 @@ from utils.preprocess_input import preprocess_input    # Preprocess: strip greet
 # --- Azure OpenAI integration ---
 from openai import AzureOpenAI                         # OpenAI client (via Azure)
 import os
-from dotenv import load_dotenv                         # Loads .env vars into environment
+from dotenv import load_dotenv        
+
+# -- For streaming responses ---
+import json                 # Loads .env vars into environment
 
 # --- Set up the route manager ---
 router = APIRouter()                                   # Think of this as a "sub-app" for routing
@@ -169,3 +173,65 @@ def ask_question(payload: UserQuery):
     except Exception as e:
         logger.exception("Error querying GPT")          # Log full traceback for debugging
         raise HTTPException(status_code=500, detail="Internal error querying GPT.")
+
+
+@router.post("/ask_stream")
+async def ask_stream(payload: dict):
+    question = payload.get("question", "")
+    session_id = payload.get("session_id", "")
+
+    if not session_id:
+        session_id = "default"
+
+    # reuse your existing logic
+    sanitized = sanitize_input(question)
+    preprocessed = preprocess_input(sanitized)
+
+    rag_chunks = get_top_chunks(preprocessed["cleaned"], k=4)
+    rag_context = "\n\n".join([chunk for chunk, _ in rag_chunks])
+
+    if session_id not in session_history:
+        session_history[session_id] = [
+            {"role": "system", "content": system_prompt}
+        ]
+    session_history[session_id].append(
+        {
+            "role": "user",
+            "content": f"Context:\n{rag_context}\n\nQuestion:\n{preprocessed['cleaned']}"
+        }
+    )
+    messages = session_history[session_id]
+
+    def event_generator():
+        stream = client.chat.completions.create(
+            model=deployment,  # keep your deployment name for now
+            messages=messages,
+            stream=True,
+        )
+
+        full_answer = ""
+
+        for chunk in stream:
+            try:
+                text = chunk.choices[0].delta.content
+            except Exception:
+                continue
+
+            if not text:
+                continue
+
+            full_answer += text
+
+            yield json.dumps({
+                "type": "delta",
+                "text": text
+            }) + "\n"
+
+        # save to history (critical)
+        session_history[session_id].append(
+            {"role": "assistant", "content": full_answer}
+        )
+
+        yield json.dumps({"type": "final"}) + "\n"
+
+    return StreamingResponse(event_generator(), media_type="application/x-ndjson")

@@ -15,8 +15,10 @@ logs/
 *.log
 
 # Client-specific configs (only track demobank in main)
-clients/*
-!clients/demobank/
+clients/lisbon-agent/RAG-lib/*.pdf
+clients/images/*
+
+examples/images/*
 
 # VS Code / PyCharm / IDE config
 .vscode/

@@ -3,11 +3,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Banking Assistant</title>
+  <title>Lisbon Travel Assistant</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="chat-container">
+  <div
+    id="chat-container"
+    data-api="https://travel-agent-cuhdccdngecqgdbu.eastus2-01.azurewebsites.net"
+    data-client="lisbon-agent"
+    data-greeting="Olá! I'm your Lisbon travel assistant. How can I help you plan your trip?"
+  >
+
+    <div id="header">
+      <h1>Lisbon Travel Assistant</h1>
+      <p>Plan your perfect trip — itineraries, food, and flights</p>
+      <button id="new-chat-btn">new chat</button>
+    </div>
+
+    <div id="starter-prompts">
+      <button class="prompt-btn">Plan my Lisbon trip</button>
+      <button class="prompt-btn">Find me a flight to Lisbon</button>
+      <button class="prompt-btn">Best food in Lisbon</button>
+      <button class="prompt-btn">Business trip itinerary</button>
+    </div>
 
     <!-- Chat Window -->
     <div id="chat-window"></div>
@@ -17,107 +35,15 @@
       <input
         type="text"
         id="user-input"
-        placeholder="Ask your question here..."
+        placeholder="Start planning your Lisbon trip…"
         required
       />
       <button type="submit">Send</button>
     </form>
   </div>
-
-  <!-- Chat Logic -->
-  <script>
-    const form = document.getElementById("query-form");
-    const input = document.getElementById("user-input");
-    const chatWindow = document.getElementById("chat-window");
-
-    // const API_URL = "http://localhost:8000/ask"; // Local testing
-    // const API_URL = "https://bankagent.moreyummy.com/ask";
-    const API_URL = "https://bankagentrg-g0dtajhfdpc0fxe7.eastus2-01.azurewebsites.net/ask";
-    const client_id = "demobank";
-
-    // Session ID generation (per tab)
-    let session_id = sessionStorage.getItem("session_id");
-    if (!session_id) {
-      session_id = crypto.randomUUID();
-      sessionStorage.setItem("session_id", session_id);
-    }
-
-    // Append message to chat window
-    function addMessage(role, text) {
-      const msg = document.createElement("div");
-      msg.classList.add("message", role, "fade-in");
-
-      // Allow basic HTML like <a> and force links to open in new tab
-      msg.innerHTML = text.replace(
-        /<a\b(?![^>]*\btarget=)/gi,
-        '<a target="_blank" '
-      );
-
-      chatWindow.appendChild(msg);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    // Create typing indicator
-    function createTypingIndicator() {
-      const typing = document.createElement("div");
-      typing.className = "assistant typing";
-      typing.innerHTML = `<span>Typing</span><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>`;
-      return typing;
-    }
-
-    // Handle form submission
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const message = input.value.trim();
-      if (!message) return;
-
-      addMessage("user", message);
-      input.value = "";
-
-      // Add typing indicator
-      const typingIndicator = createTypingIndicator();
-      chatWindow.appendChild(typingIndicator);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id,
-            client_id,
-            question: message
-          }),
-        });
-
-        const data = await response.json();
-        typingIndicator.remove();
-        addMessage("assistant", data.answer || "No answer received.");
-      } catch (err) {
-        console.error(err);
-        typingIndicator.remove();
-        addMessage("assistant", "Error: Unable to connect to server.");
-      }
-    });
-  </script>
-
-  <!-- Initial greeting message -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const greeting = "Hello! Welcome to Regent Bank. How can I assist you today?";
-      addMessage("assistant", greeting);
-    });
-  </script>
-
-  <!-- Viewport Height Fix for Mobile -->
-  <script>
-    function setAppHeight() {
-      const doc = document.documentElement;
-      doc.style.setProperty('--app-height', `${window.innerHeight}px`);
-    }
-    window.addEventListener('resize', setAppHeight);
-    window.addEventListener('orientationchange', setAppHeight);
-    setAppHeight();
-  </script>
+  <div id="photo-credit">
+    Photo: Lisbon Hillside by O. Pálsson (Flickr, CC)
+  </div>
+  <script src="chat.js"></script>
 </body>
 </html>
