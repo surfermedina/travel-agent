@@ -32,6 +32,7 @@ Thumbs.db
 debug/
 prompts/
 archives/
+tests/
 
 # Runtime vector DB storage
 vector-index/
