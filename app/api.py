@@ -2,7 +2,7 @@
 # These are the specific HTTP paths that the backend listens to — like /ask — and it handles incoming requests.
 
 # --- FastAPI & typing imports ---
-from fastapi import APIRouter, HTTPException           # APIRouter allows modular route organization
+from fastapi import APIRouter, HTTPException, BackgroundTasks   # APIRouter allows modular route organization
 from fastapi.responses import StreamingResponse
 from app.models import UserQuery, AgentResponse        # Pydantic models for input/output validation
 
@@ -13,6 +13,9 @@ from utils.sanitize import sanitize_input              # Sanitize user input for
 from utils.logger import get_logger                    # Custom logger for structured logging
 from utils.rag_retriever import get_top_chunks         # RAG chunk retriever from Chroma DB
 from utils.preprocess_input import preprocess_input    # Preprocess: strip greetings, detect risky keywords
+from utils.email_sender import send_itinerary_email    # Function to send itinerary emails via Resend API
+from flows.flow_registry import FLOW_REGISTRY          # Central registry for multi-step flows
+from flows.flow_engine import *                        # Flow execution engine functions for multi-step interactions
 
 # --- Azure OpenAI integration ---
 from openai import AzureOpenAI                         # OpenAI client (via Azure)
@@ -21,6 +24,7 @@ from dotenv import load_dotenv
 
 # -- For streaming responses ---
 import json                 # Loads .env vars into environment
+import asyncio              # For async handling of streaming responses    
 
 # --- Set up the route manager ---
 router = APIRouter()                                   # Think of this as a "sub-app" for routing
@@ -44,60 +48,142 @@ client = AzureOpenAI(
 session_history = {}  # Tracks chat messages per session
 session_state = {}    # Tracks structured state like current flow steps
 
-# --- Business Checking Flow Handler ---
-def handle_business_checking_flow(user_input: str, session_id: str) -> dict:
+# --- Execute the final completion step for a flow (e.g. GPT itinerary generation) ---
+def execute_flow_completion(flow,state,stream=False):
+
+    """
+    Execute the configured completion behavior
+    for a flow.
+    Args:
+        flow (dict):
+            Flow definition object.
+        state (dict):
+            Current collected session state.
+        stream (bool):
+            Whether to stream GPT output progressively.
+    Returns:
+        str:
+            Completion output text.
+    """
+
+    completion_type = get_completion_type(flow)
+
+    if completion_type == "gpt_generation":
+
+        prompt = render_completion_prompt(flow, state)
+
+        response = client.chat.completions.create(
+            model=deployment,
+            messages=[
+                {
+                    "role": "system",
+                    "content": get_completion_config(flow).get("system_prompt", "")
+                },
+                {"role": "user", "content": prompt}
+            ],
+            stream=stream
+        )
+
+        if stream:
+            return response
+
+        return response.choices[0].message.content
+
+    return "Unsupported completion type."
+
+# --- Flow Handler ---
+def handle_flow(flow, user_input: str, session_id: str, background_tasks: BackgroundTasks = None) -> dict:
     state = session_state[session_id]
     step = state.get("step", 1)
 
-    if step == 1:
-        state["business_name"] = user_input
-        state["step"] = 2
-        return {"source": "multi-step", "answer": "What type of business is it (e.g., LLC, sole proprietorship, partnership)?"}
+    # --- Standard input collection steps ---
+    if get_step_type(flow, step) == "collect":
 
-    elif step == 2:
-        state["business_type"] = user_input
-        state["step"] = 3
-        return {"source": "multi-step", "answer": "Do you already have an EIN (Employer Identification Number)?"}
+        collect_step_input(flow, state, step, user_input)
 
-    elif step == 3:
-        state["has_ein"] = user_input
-        state["step"] = 4
-        return {"source": "multi-step", "answer": "Which state is your business registered in?"}
+        advance_flow_step(state)
 
-    elif step == 4:
-        state["state"] = user_input
-        state["step"] = 5
-        return {"source": "multi-step", "answer": "How many people will be authorized to sign on this account?"}
-
-    elif step == 5:
-        state["signers"] = user_input
-        state["step"] = 6
-        summary = (
-            f"Business Name: {state['business_name']}\n"
-            f"Type: {state['business_type']}\n"
-            f"EIN: {state['has_ein']}\n"
-            f"State: {state['state']}\n"
-            f"Authorized Signers: {state['signers']}"
+        return build_flow_response(
+            "multi-step",
+            get_next_flow_prompt(flow, state["step"])
         )
-        return {
-            "source": "multi-step",
-            "answer": f"Thanks! I have the following info:\n\n{summary}\n\nWould you prefer a secure online link or to schedule an in-branch appointment?"
-        }
 
-    elif step == 6:
-        session_state[session_id] = {}  # Clear state
-        return {
-            "source": "multi-step",
-            "answer": "Perfect — I've noted your preference. A representative will follow up shortly!"
-        }
+    elif get_step_type(flow, step) == "email_capture":
+
+        email_input = user_input.strip()
+
+        if email_input and email_input.lower() != "skip":
+
+            if "@" in email_input and "." in email_input:
+                state["email"] = email_input
+                email_confirmation = f"\n\n(I'll also email this response to {email_input}.)"
+
+            else:
+                email_confirmation = "\n\n(No valid email detected, so I won't send an email copy.)"
+
+        else:
+            email_confirmation = ""
+
+        # Stream live GPT output for /ask_stream, return full text for /ask
+        #   If background_tasks is None, we're in the /ask_stream endpoint and should stream; 
+        #   otherwise, execute the /ask endpoint normally
+        completion_output = execute_flow_completion(flow,state,stream=background_tasks is None)
+
+        # Streaming endpoint returns the live GPT stream immediately
+        # /ask_stream → return live GPT stream immediately
+        # /ask → continue normal completion + email handling
+        if background_tasks is None: 
+            return build_flow_response(
+                get_completion_response_source(flow),
+                completion_output,
+                stream=True
+            )
+
+        email_handler_name = get_completion_email_handler(flow)
+
+        if is_completion_email_enabled(flow) and state.get("email"):
+
+            email_handler = globals().get(email_handler_name)
+
+            if email_handler:
+
+                if background_tasks:
+
+                    background_tasks.add_task(
+                        email_handler,
+                        state["email"],
+                        completion_output
+                    )
+
+                else:
+
+                    email_handler(
+                        state["email"],
+                        completion_output
+                    )
+
+        session_history.setdefault(session_id, []).append(
+            {"role": "assistant", "content": completion_output}
+        )
+
+        session_state[session_id] = {}
+
+        return build_flow_response(
+            get_completion_response_source(flow),
+            completion_output + email_confirmation
+        )
 
     else:
         session_state[session_id] = {}
-        return {"source": "multi-step", "answer": "Sorry, I lost track of the steps. Let’s start again — what’s the name of your business?"}
+
+        return build_flow_response(
+            "multi-step",
+            get_flow_fallback_message(flow)
+        )
 
 # --- API Endpoints ---
 @router.post("/ask", response_model=AgentResponse)     # POST /ask — takes in a UserQuery, returns AgentResponse
-def ask_question(payload: UserQuery):
+def ask_question(payload: UserQuery, background_tasks: BackgroundTasks):
     raw_input = payload.question                       # Extract the question from request payload
     session_id = payload.session_id                    # Track conversation session
     current_client = payload.client_id or client_id    # Allow override of client_id per request (optional)
@@ -113,18 +199,39 @@ def ask_question(payload: UserQuery):
     if preprocessed["is_greeting_only"]:
         return {"source": "greeting", "answer": "Hi there! How can I help you today?"}
 
-    # --- Multi-step flow handler ---
-    if session_id in session_state and session_state[session_id].get("flow") == "business_checking":
-        return handle_business_checking_flow(preprocessed["cleaned"], session_id)
+    # --- Active multi-step flow handler ---
+    active_flow = get_active_flow(
+        session_id,
+        session_state,
+        FLOW_REGISTRY
+    )
 
-    # --- Smarter Multi-step trigger ---
+    if active_flow:
+
+        return handle_flow(
+            active_flow,
+            preprocessed["cleaned"],
+            session_id,
+            background_tasks
+        )
+    
+    # --- Multi-step triggers ---
     lower_input = preprocessed["cleaned"].lower()
-    if "business checking" in lower_input and any(keyword in lower_input for keyword in ["open", "start", "apply"]):
-        session_state[session_id] = {
-            "flow": "business_checking",
-            "step": 1
+
+    # --- Generic multi-step flow trigger detection ---
+    triggered_flow = detect_triggered_flow(
+        lower_input,
+        FLOW_REGISTRY
+    )
+
+    if triggered_flow:
+
+        session_state[session_id] = initialize_flow_state(triggered_flow)
+
+        return {
+            "source": "multi-step",
+            "answer": get_initial_flow_prompt(triggered_flow)
         }
-        return {"source": "multi-step", "answer": "Great! What's the name of your business?"}
 
     # --- FAQ match with suppression toggle ---
     if session_id not in session_state or not session_state[session_id].get("flow"):
@@ -186,6 +293,105 @@ async def ask_stream(payload: dict):
     # reuse your existing logic
     sanitized = sanitize_input(question)
     preprocessed = preprocess_input(sanitized)
+
+    # --- Active multi-step flow handler ---
+    active_flow = get_active_flow(
+        session_id,
+        session_state,
+        FLOW_REGISTRY
+    )
+
+    if active_flow:
+
+        flow_response = handle_flow(
+            active_flow,
+            preprocessed["cleaned"],
+            session_id,
+            None
+        )
+
+        is_streaming_response = flow_response.get("stream", False)
+
+        # Handle live GPT streaming separately from normal full-text flow responses
+        async def flow_generator():
+            if is_streaming_response:
+
+                full_answer = ""
+
+                for chunk in flow_response.get("answer"):
+
+                    try:
+                        text = chunk.choices[0].delta.content
+                    except Exception:
+                        continue
+
+                    if not text:
+                        continue
+
+                    full_answer += text
+
+                    yield json.dumps({
+                        "type": "delta",
+                        "text": text
+                    }) + "\n"
+
+                    await asyncio.sleep(0)
+
+                session_history.setdefault(session_id, []).append(
+                    {"role": "assistant", "content": full_answer}
+                )
+
+                if active_flow.get("completion", {}).get("email_enabled") and session_state[session_id].get("email"):
+
+                    send_itinerary_email(
+                        session_state[session_id]["email"],
+                        full_answer
+                    )
+
+                session_state[session_id] = {}
+
+            else:
+
+                yield json.dumps({
+                    "type": "delta",
+                    "text": flow_response.get("answer", "")
+                }) + "\n"
+
+            yield json.dumps({"type": "final"}) + "\n"
+
+        return StreamingResponse(
+            flow_generator(),
+            media_type="application/x-ndjson"
+        )
+    
+    # --- Multi-step triggers ---
+    lower_input = preprocessed["cleaned"].lower()
+
+    # --- Generic multi-step flow trigger detection ---
+    triggered_flow = detect_triggered_flow(
+        lower_input,
+        FLOW_REGISTRY
+    )
+
+    if triggered_flow:
+
+        session_state[session_id] = initialize_flow_state(triggered_flow)
+
+        async def trigger_generator():
+            yield json.dumps({
+                "type": "delta",
+                "text": build_flow_response(
+                    "multi-step",
+                    get_initial_flow_prompt(triggered_flow)
+                ).get("answer", "")
+            }) + "\n"
+
+            yield json.dumps({"type": "final"}) + "\n"
+
+        return StreamingResponse(
+            trigger_generator(),
+            media_type="application/x-ndjson"
+        )
 
     rag_chunks = get_top_chunks(preprocessed["cleaned"], k=4)
     rag_context = "\n\n".join([chunk for chunk, _ in rag_chunks])

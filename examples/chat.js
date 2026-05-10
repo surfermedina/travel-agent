@@ -18,6 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const formatText = (text) =>
     text
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/^### (.*$)/gim, "<strong>$1</strong>")
+      .replace(/^## (.*$)/gim, "<h4>$1</h4>")
+      .replace(/^# (.*$)/gim, "<h3>$1</h3>")
+      .replace(/^- (.*$)/gim, "• $1")
+      .replace(/^---$/gim, "<hr>")
       .replace(/\n/g, "<br>")
       .replace(/<a\b(?![^>]*\btarget=)/gi, '<a target="_blank" ');
 

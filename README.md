@@ -54,6 +54,7 @@ travel-agent/
 ├── clients/ # Client-specific configs (Lisbon demo)
 ├── utils/ # RAG, routing, preprocessing
 ├── examples/ # Frontend chat UI (reference)
+├── flows/ # Multi-step dialogue setup
 ├── config/ # Environment templates
 ├── Dockerfile
 ├── startup.sh
@@ -85,3 +86,152 @@ http://127.0.0.1:8000/docs
 
 Built by Joel “Ed” Medina  
 https://moreyummy.com
+
+---
+
+## Adding a New Flow
+
+Flows are reusable multi-step conversation paths triggered by specific phrases. They can also define post-completion actions such as email sending. New flows should not require api.py changes.
+
+1. Create a new flow file [name]_flow.py, such as ...
+   flows/hotel_booking_flow.py
+
+2. Define the flow object
+   Include:
+   - name
+   - default_state
+   - triggers
+   - fallback_message
+   - steps
+   - completion
+
+   Example step types:
+   - "collect"
+   - "email_capture"
+
+   Completion config includes:
+   - system_prompt
+   - prompt_template
+   - response_source
+   - email_enabled
+
+3. Register the flow in flows/flow_registry.py
+
+   Example:
+
+   from flows.hotel_booking_flow import HOTEL_BOOKING_FLOW
+
+   FLOW_REGISTRY = {
+       ...
+       "hotel_booking": HOTEL_BOOKING_FLOW
+   }
+
+4. Keep triggers specific
+   Avoid overlapping/general phrases between the various flow.py files
+
+5. (Optional, but advisable) Add a starter button in index.html
+
+6. Test
+
+---
+
+# Assistant Discussion Flow & Orchestration Architecture
+
+USER MESSAGE
+    │
+    ▼
+chat.js
+(frontend UI + streaming transport)
+    │
+    ▼
+POST /ask_stream
+(api.py)
+    │
+    ▼
+sanitize_input()
+preprocess_input()
+(utils/)
+    │
+    ├── Greeting only?
+    │       └── Return greeting response
+    │
+    ├── Active flow exists?
+    │       │
+    │       ▼
+    │   get_active_flow()
+    │   (flow_engine.py)
+    │       │
+    │       ▼
+    │   handle_flow()
+    │   (api.py)
+    │       │
+    │       ├── collect step
+    │       │       │
+    │       │       ├── collect_step_input()
+    │       │       ├── advance_flow_step()
+    │       │       ├── get_next_flow_prompt()
+    │       │       └── session_state update
+    │       │
+    │       │       (flow_engine.py)
+    │       │
+    │       └── completion step
+    │               │
+    │               ├── execute_flow_completion()
+    │               │   (api.py)
+    │               │       │
+    │               │       ├── render_completion_prompt()
+    │               │       │   (flow_engine.py)
+    │               │       │
+    │               │       ├── flow config lookup
+    │               │       │   (itinerary_flow.py)
+    │               │       │
+    │               │       ├── Azure OpenAI stream call
+    │               │       └── return GPT stream iterator
+    │               │
+    │               ▼
+    │       flow_generator()
+    │       (api.py)
+    │               │
+    │               ├── iterate GPT stream chunks
+    │               ├── emit NDJSON delta events
+    │               ├── append assistant reply to session_history
+    │               ├── clear session_state
+    │               └── emit final event
+    │
+    ├── Flow trigger detected?
+    │       │
+    │       ├── detect_triggered_flow()
+    │       ├── initialize_flow_state()
+    │       └── get_initial_flow_prompt()
+    │
+    │       (flow_engine.py)
+    │
+    ├── FAQ fuzzy match?
+    │       │
+    │       ├── load_faq()
+    │       │   (yaml_loader.py)
+    │       │
+    │       ├── faq.yaml
+    │       │   (client FAQ knowledge base)
+    │       │
+    │       ├── find_best_match()
+    │       │   (match_faq.py)
+    │       │
+    │       └── return FAQ response
+    │
+    └── RAG + GPT fallback
+            │
+            ├── get_top_chunks()
+            │   (rag_retriever.py)
+            │
+            ├── Chroma vector retrieval
+            │
+            ├── append RAG context to session_history
+            │
+            ├── Azure OpenAI stream call
+            │
+            ├── event_generator()
+            │   (api.py)
+            │
+            ├── emit NDJSON delta events
+            └── append assistant response to session_history
