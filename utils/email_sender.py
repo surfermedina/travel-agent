@@ -13,6 +13,8 @@ RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL")
 def send_itinerary_email(to_email: str, itinerary: str):
     """Send itinerary email using Resend API."""
     
+    to_email = to_email.strip().lower()
+
     if not RESEND_API_KEY:
         logger.error("Missing RESEND_API_KEY")
         return False

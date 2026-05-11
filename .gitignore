@@ -19,6 +19,7 @@ clients/lisbon-agent/RAG-lib/*.pdf
 clients/images/*
 
 examples/images/*
+examples/live-website/*
 
 # VS Code / PyCharm / IDE config
 .vscode/
